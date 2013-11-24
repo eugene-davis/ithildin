@@ -11,7 +11,7 @@
 ithildin_serial: brute_force_serial.o pass_check.o
 	g++ brute_force_serial.o pass_check.o -o ithildin_serial -lssl -lcrypto
 
-ithildin_diag: brute_force_serial.o pass_check_diagnostic.o
+ithildin_serial_diag: brute_force_serial.o pass_check_diagnostic.o
 	g++ brute_force_serial.o pass_check_diagnostic.o -o brute_force_serial
 
 #Compilation

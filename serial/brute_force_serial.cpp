@@ -12,7 +12,7 @@
 		make ithildin_diag
 
 	To execute:
-		ithildin_serial usage: ithildin_serial [md5sum] [search depth
+		ithildin_serial usage: ithildin_serial [md5sum] [search depth]
 		Note that setting the search depth too deep may result in encountering Balrogs
 
 	To execute Diagnostic:
@@ -134,11 +134,6 @@ int enumChars(int cur_pos, unsigned char pass[], const int max_length)
 
 void printPass(int length, unsigned char pass[])
 {
-	TIMER_STOP;
-
-	cout << "time=" << setprecision(8) <<  TIMER_ELAPSED/1000000.0 
-        << " seconds" << endl;
-
 	cout << "Mithril!" << endl;
     cout << "Password was ";
     for (int j = 0; j < length; j++)
@@ -146,4 +141,8 @@ void printPass(int length, unsigned char pass[])
     	cout << pass[j];
     }
     cout << endl;
+	TIMER_STOP;
+
+	cout << "time=" << setprecision(8) <<  TIMER_ELAPSED/1000000.0 
+        << " seconds" << endl;
 }

@@ -1,3 +1,17 @@
+/*
+*	Eugene Davis - November 2013 - CPE 412
+*	Ithildin Password Cracker -- Pass Check MD5
+*
+*/
+
+/*
+	This file is for the MD5 version of pass check, which is the full version.
+	It is used by default. It provides functions to both the parallel and
+	serial versions of Ithildin. It is left in a central location to
+	ensure that the Pass Check algorithm in use is the same for both
+	serial and parallel versions.
+*/
+
 #include "pass_check.h"
 #include <openssl/md5.h>
 #include <stdio.h>
@@ -20,7 +34,7 @@ void handleInput(int argc, char *argv[], int *size)
 	// is a null terminated 32 char string
 	if (argc != 3 || argv[1][MD5_HEX_LENGTH + 1] != '\0')
 	{
-		printf("usage: brute_force_serial [md5sum] [max length]\n");
+		printf("usage: ithildin_serial [md5sum] [search depth]\nMuch like in Moria, delving too deep may result in Balrogs\n");
 		exit(1);
 	}
 	// Copy over MD5 sum
@@ -45,7 +59,7 @@ void handleInput(int argc, char *argv[], int *size, int *threads)
 	// is a null terminated 32 char string
 	if (argc != 4 || argv[1][MD5_HEX_LENGTH + 1] != '\0')
 	{
-		printf("usage: brute_force_parallel [md5sum] [max length] [num threads]\n");
+		printf("usage: ithildin_parallel [md5sum] [search depth] [num threads]\nMuch like in Moria, delving too deep may result in Balrogs\n");
 		exit(1);
 	}
 	// Copy over MD5 sum

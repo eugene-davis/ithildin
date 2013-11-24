@@ -2,6 +2,7 @@
 #include "../passcheck/pass_check.h"
 #include <sys/time.h>
 #include <iomanip>
+#include <omp.h>
 
 using namespace std;
 
@@ -12,8 +13,8 @@ using namespace std;
 #define TIMER_STOP      gettimeofday(&tv2, (struct timezone*)0)
 struct timeval tv1,tv2;
 
-int enumChars(int cur_pos, unsigned char pass[], int max_length);
-void printPass(int length, unsigned char pass[]);
+inline int enumChars(int cur_pos, unsigned char pass[], int max_length);
+inline void printPass(int length, unsigned char pass[]);
 
 // Globals
 const unsigned char start_char = 0; // character to start search at
@@ -22,11 +23,18 @@ const unsigned char end_char = 255; // character to end search at
 
 int main(int argc, char *argv[])
 {
+	
+
 	int max_length;
 
-	handleInput(argc, argv, &max_length);
+	// Parallel specific variables
+	int threads;
+	volatile bool complete = false; // Check this flag to see if solution has been found
+	int finalSize = 0; // Final size of password
+	unsigned char *password; // Final password
 
-    unsigned char *pass = new unsigned char[max_length];
+	handleInput(argc, argv, &max_length, &threads);
+	omp_set_num_threads(threads);
    
 	/*
    Start recording the execution time
@@ -34,25 +42,36 @@ int main(int argc, char *argv[])
    TIMER_CLEAR;
    TIMER_START;
     // Partition on starting letter to make partitions of even size 
+	#pragma omp parallel for schedule(guided)
     for (unsigned char i = start_char; i < end_char; i++)
     {
-        cout << "Iteration " << i << endl;
-        pass[0] = i;
-        if (check(1, pass))
-        {
-            printPass(1, pass);
-            return 0; // Hurray, we win
-        }
-        if (max_length != 1)
-        {
-            int length = enumChars(0, pass, max_length);
-            if (-1 != length)
-            {
-                printPass(length, pass);
-                return 0; // Hurray, we win                
-            }
-        }
+		if (!complete) // If complete, should go quite a bit faster
+		{
+        	//cout << "Iteration " << i << endl;
+			unsigned char *pass = new unsigned char[max_length];
+        	pass[0] = i;
+        	if (check(1, pass))
+        	{
+				password = pass;
+				finalSize = 1;
+				complete = true;
+        	}
+        	if (max_length != 1)
+        	{
+            	int length = enumChars(0, pass, max_length);
+            	if (-1 != length)
+            	{
+					password = pass;
+					finalSize = length;
+					complete = true;                
+            	}
+        	}
+		}
     }
+	if (complete)
+	{
+		printPass(finalSize, password);
+	}
 	TIMER_STOP;
 
 	cout << "time=" << setprecision(8) <<  TIMER_ELAPSED/1000000.0 
@@ -65,7 +84,6 @@ int main(int argc, char *argv[])
 int enumChars(int cur_pos, unsigned char pass[], const int max_length)
 {
     cur_pos++; // Increment current position for this iteration of the recursion
-
     for (unsigned char i = start_char; i < end_char; i++)
     {
         pass[cur_pos] = i;

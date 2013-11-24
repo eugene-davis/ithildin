@@ -1,14 +1,64 @@
 #include "pass_check.h"
 #include <openssl/md5.h>
 #include <stdio.h>
-
-
+#include <stdlib.h>
 
 const int MD5_HEX_LENGTH = 33;
 //char md5[MD5_HEX_LENGTH] = "0cc175b9c0f1b6a831c399e269772661"; // a
 //char md5[MD5_HEX_LENGTH] = "187ef4436122d1cc2f40dc2b92f0eba0"; // ab
-char md5[MD5_HEX_LENGTH] = "4141638976566cb8526c738e7514df9f"; //ya1
+char md5[MD5_HEX_LENGTH];// = "4141638976566cb8526c738e7514df9f"; //ya1
 //char md5[MD5_HEX_LENGTH] = "286755fad04869ca523320acce0dc6a4"; //password
+
+/*
+*
+*	handleInput for serial version. Gets in the MD5 array, and the search size
+*
+*/
+void handleInput(int argc, char *argv[], int *size)
+{
+	// Check that there are three arguments and the in the MD5 sum argument
+	// is a null terminated 32 char string
+	if (argc != 3 || argv[1][MD5_HEX_LENGTH + 1] != '\0')
+	{
+		printf("usage: brute_force_serial [md5sum] [max length]\n");
+		exit(1);
+	}
+	// Copy over MD5 sum
+	for (int i = 0; i < MD5_HEX_LENGTH; i++)
+	{
+		md5[i] = argv[1][i];
+	}
+
+	// Get size
+	*size = atoi(argv[2]);
+}
+
+
+/*
+*
+*	handleInput for parallel version. Gets in the MD5 array, the search size, and the number of threads to set
+*
+*/
+void handleInput(int argc, char *argv[], int *size, int *threads)
+{
+	// Check that there are three arguments and the in the MD5 sum argument
+	// is a null terminated 32 char string
+	if (argc != 4 || argv[1][MD5_HEX_LENGTH + 1] != '\0')
+	{
+		printf("usage: brute_force_parallel [md5sum] [max length] [num threads]\n");
+		exit(1);
+	}
+	// Copy over MD5 sum
+	for (int i = 0; i < MD5_HEX_LENGTH; i++)
+	{
+		md5[i] = argv[1][i];
+	}
+
+	// Get size
+	*size = atoi(argv[2]);
+	// Get number of threads
+	*threads = atoi(argv[3]);
+}
 
 /*
 *    int size:              size of password to check

@@ -8,11 +8,13 @@
 # Typing make clean will clean either version
 
 #Linking
-ithildin_parallel: brute_force_parallel.o pass_check.o
+ithildin_parallel: brute_force_parallel.o pass_check.o monte_carlo_parallel.o
 	g++ brute_force_parallel.o pass_check.o -o ithildin_parallel -lssl -lcrypto -fopenmp
+	g++ monte_carlo_parallel.o pass_check.o -o ithildin_mc_parallel -lssl -lcrypto -fopenmp
 
-ithildin_parallel_diag: brute_force_parallel.o pass_check_diagnostic.o
+ithildin_parallel_diag: brute_force_parallel.o pass_check_diagnostic.o monte_carlo_parallel.o
 	g++ brute_force_parallel.o pass_check_diagnostic.o -o ithildin_parallel -fopenmp
+	g++ monte_carlo_parallel.o pass_check_diagnostic.o -o ithildin_mc_parallel -lssl -lcrypto -fopenmp
 
 #Compilation
 pass_check.o: ../passcheck/pass_check.cpp
@@ -24,5 +26,8 @@ brute_force_parallel.o: brute_force_parallel.cpp
 pass_check_diagnostic.o: ../passcheck/pass_check_diagnostic.cpp
 	g++ -c ../passcheck/pass_check_diagnostic.cpp -o pass_check_diagnostic.o
 
+monte_carlo_parallel.o: monte_carlo_parallel.cpp
+	g++ -c monte_carlo_parallel.cpp -o monte_carlo_parallel.o
+
 clean:
-	rm *o ithildin_parallel
+	rm *o ithildin_parallel ithildin_mc_parallel

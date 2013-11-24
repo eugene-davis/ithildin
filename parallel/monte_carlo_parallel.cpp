@@ -1,6 +1,6 @@
 /*
 *	Eugene Davis - November 2013 - CPE 412
-*	Ithildin Password Cracker -- Parallel Version
+*	Ithildin Password Cracker -- Monte Carlo Parallel Version
 *
 */
 
@@ -12,21 +12,16 @@
 		make ithildin_diag
 
 	To execute:
-		ithildin_parallel usage: ithildin_serial [md5sum] [search depth] [num threads]
+		ithildin_mc_parallel usage: ithildin_serial [md5sum] [search depth] [num threads]
 		Note that setting the search depth too deep may result in encountering Balrogs
 
 	To execute Diagnostic:
-		ithildin_parallel usage: ithildin_serial [search depth] [num threads]
+		ithildin_mc_parallel usage: ithildin_serial [search depth] [num threads]
 		Note that setting the search depth too deep may result in encountering Balrogs
 
-	This program is designed to perform a depth-search search over a potential password
-	space of all ASCII characters. It calculates the MD5 hash of each potential password
-	and compares it to the user supplied hash. If it finds a password that results in
-	the desired hash, it outputs the password to the user. If it fails, it alerts the
-	user of the imminent Balrog and exits.
-
-	It utilizes OpenMP to split the for loop that provides the initial set of characters
-	into different threads, dramatically improving execution time.
+	This program takes a Monte Carlo approach to password cracking, and does it in parallel.
+	Because it must exceute ever iteration of the loop due to OpenMP (even once the condition
+	is found) it is usually slower than the depth-first search done in other versions.
 
 	Powered by Dwarves.
 */
@@ -78,38 +73,34 @@ int main(int argc, char *argv[])
    */
    TIMER_CLEAR;
    TIMER_START;
-    // Partition on starting letter to make partitions of even size 
+
+    // As in the serial version, make a very large number of iterations 
 	#pragma omp parallel for schedule(guided)
-    for (unsigned char i = start_char; i < end_char; i++)
+    for (unsigned long i = 0; i < UINT_MAX; i++)
     {
 		if (!complete) // If one thread gets a hit, it sets the complete flag
 					   // and as a result all threads should rapidly terminate
 		{
-        	// Set up a character array local to each thread
 			unsigned char *pass = new unsigned char[max_length];
-        	pass[0] = i;
+			unsigned char rand_size; // Get random number to pick the size to make
+			// RAND_bytes outputs 0 if it doesn't have sufficient randomness, loop until it does
+			// Made critical to ensure RAND_bytes has time to generate new randomness
+			#pragma omp critical(rand_gen)
+			while (RAND_bytes(&rand_size, 1) == 0);
+			rand_size = rand_size % max_length;
+			rand_size += 1; // Should never be 0
 
-			// Check if the single character in this iteration is the password
-        	if (check(1, pass))
+			// Again, loop until good entropy is output
+			// Made critical to ensure RAND_bytes has time to generate new randomness
+			#pragma omp critical(rand_gen)
+			while (RAND_bytes(pass, rand_size) == 0);
+			// Check if we got lucky
+        	if (check(rand_size, pass))
         	{
+            	complete = true;
+				i = ULONG_MAX;
 				password = pass;
-				finalSize = 1;
-				complete = true;
-        	}
-			// Check that the maximum length is more than 1
-        	if (max_length >= 1)
-        	{
-            	int length = enumChars(0, pass, max_length);
-				// If a positive value is returned, we have
-				// a potential canidate! (One which will work
-				// but in theory may just be a collision with
-				// the original password)
-            	if (-1 != length)
-            	{
-					password = pass;
-					finalSize = length;
-					complete = true;                
-            	}
+				finalSize = rand_size;
         	}
 		}
     }

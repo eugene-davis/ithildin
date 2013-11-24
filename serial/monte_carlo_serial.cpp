@@ -12,11 +12,11 @@
 		make ithildin_diag
 
 	To execute:
-		ithildin_serial usage: ithildin_serial [md5sum] [search depth]
+		ithildin_mc_serial usage: ithildin_serial [md5sum] [search depth]
 		Note that setting the search depth too deep may result in encountering Balrogs
 
 	To execute Diagnostic:
-		ithildin_parallel usage: ithildin_serial [search depth]
+		ithildin_mc_parallel usage: ithildin_serial [search depth]
 		Note that setting the search depth too deep may result in encountering Balrogs
 
 	This version of Ithildin randomoly guesses at potential passwords. In theory it should
@@ -70,8 +70,8 @@ int main(int argc, char *argv[])
    */
    TIMER_CLEAR;
    TIMER_START;
-	// Just repeat for the max value of unsigned long, if still can't find it give up
-    for (unsigned long i = 0; i < ULONG_MAX; i++)
+	// Just repeat for the max value of unsigned int, if still can't find it give up
+    for (unsigned int i = 0; i < UINT_MAX; i++)
     {
 		unsigned char rand_size; // Get random number to pick the size to make
 		// RAND_bytes outputs 0 if it doesn't have sufficient randomness, loop until it does

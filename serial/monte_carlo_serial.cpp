@@ -1,6 +1,6 @@
 /*
 *	Eugene Davis - November 2013 - CPE 412
-*	Ithildin Password Cracker -- Serial Version
+*	Ithildin Password Cracker -- Monte Carlo Version
 *
 */
 
@@ -19,11 +19,9 @@
 		ithildin_parallel usage: ithildin_serial [search depth]
 		Note that setting the search depth too deep may result in encountering Balrogs
 
-	This program is designed to perform a depth-search search over a potential password
-	space of all ASCII characters. It calculates the MD5 hash of each potential password
-	and compares it to the user supplied hash. If it finds a password that results in
-	the desired hash, it outputs the password to the user. If it fails, it alerts the
-	user of the imminent Balrog and exits.
+	This version of Ithildin randomoly guesses at potential passwords. In theory it should
+	average out to about the same execution time as a depth-first search, given enough
+	runs over a large enough data set.
 
 	This version of Ithildin is serial, and exists to allow a comparison to the parallel
 	version.
@@ -35,6 +33,8 @@
 #include "../passcheck/pass_check.h"
 #include <sys/time.h>
 #include <iomanip>
+#include <openssl/rand.h>
+#include <climits>
 
 using namespace std;
 
@@ -70,28 +70,22 @@ int main(int argc, char *argv[])
    */
    TIMER_CLEAR;
    TIMER_START;
-    for (unsigned char i = start_char; i < end_char; i++)
+	// Just repeat for the max value of unsigned long, if still can't find it give up
+    for (unsigned long i = 0; i < ULONG_MAX; i++)
     {
-        pass[0] = i;
-		// Check if we got lucky on the first try
-        if (check(1, pass))
+		unsigned char rand_size; // Get random number to pick the size to make
+		// RAND_bytes outputs 0 if it doesn't have sufficient randomness, loop until it does
+		while (RAND_bytes(&rand_size, 1) == 0);
+		rand_size = rand_size % max_length;
+		rand_size += 1; // Should never be 0
+
+		// Again, loop until good entropy is output
+		while (RAND_bytes(pass, rand_size) == 0);
+		// Check if we got lucky
+        if (check(rand_size, pass))
         {
-            printPass(1, pass);
+            printPass(rand_size, pass);
             return 0; // Hurray, we win
-        }
-		// Make sure that we have a bigger than 1 max_length and should continue our search
-        if (max_length >= 1)
-        {
-            int length = enumChars(0, pass, max_length);
-			// If a positive value is returned, we have
-			// a potential canidate! (One which will work
-			// but in theory may just be a collision with
-			// the original password) 
-            if (-1 != length)
-            {
-                printPass(length, pass);
-                return 0; // Hurray, we win                
-            }
         }
     }
 	// Failure! Even the Orcs are running away now.
@@ -119,7 +113,7 @@ int enumChars(int cur_pos, unsigned char pass[], const int max_length)
             return cur_pos + 1; // Return size of working password array
         }
 		// If check is not successful, keep digging
-        if (cur_pos + 1 < max_length)
+        if (cur_pos + 1 != max_length)
         {
 			// Recursion happening right here
             int length = enumChars(cur_pos, pass, max_length); 

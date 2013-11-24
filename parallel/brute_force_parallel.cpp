@@ -145,7 +145,7 @@ int enumChars(int cur_pos, unsigned char pass[], const int max_length)
             return cur_pos + 1; // Return size of working password array
         }
 		// If check is not successful, keep digging
-        if (cur_pos + 1 != max_length)
+        if (cur_pos + 1 < max_length)
         {
 			// Recursion happening right here
             int length = enumChars(cur_pos, pass, max_length); 

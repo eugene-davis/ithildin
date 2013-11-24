@@ -8,11 +8,13 @@
 # Typing make clean will clean either version
 
 #Linking
-ithildin_serial: brute_force_serial.o pass_check.o
+ithildin_serial: brute_force_serial.o pass_check.o monte_carlo_serial.o
 	g++ brute_force_serial.o pass_check.o -o ithildin_serial -lssl -lcrypto
+	g++ monte_carlo_serial.o pass_check.o -o ithildin_mc_serial -lssl -lcrypto
 
-ithildin_serial_diag: brute_force_serial.o pass_check_diagnostic.o
-	g++ brute_force_serial.o pass_check_diagnostic.o -o brute_force_serial
+ithildin_serial_diag: brute_force_serial.o pass_check_diagnostic.o monte_carlo_serial.o
+	g++ brute_force_serial.o pass_check_diagnostic.o -o ithildin_serial
+	g++ monte_carlo_serial.o pass_check_diagnostic.o -o ithildin_mc_serial -lssl -lcrypto
 
 #Compilation
 pass_check.o: ../passcheck/pass_check.cpp
@@ -21,8 +23,11 @@ pass_check.o: ../passcheck/pass_check.cpp
 brute_force_serial.o: brute_force_serial.cpp
 	g++ -c brute_force_serial.cpp -o brute_force_serial.o
 
+monte_carlo_serial.o: monte_carlo_serial.cpp
+	g++ -c monte_carlo_serial.cpp -o monte_carlo_serial.o
+
 pass_check_diagnostic.o: ../passcheck/pass_check_diagnostic.cpp
 	g++ -c ../passcheck/pass_check_diagnostic.cpp -o pass_check_diagnostic.o
 
 clean:
-	rm *o ithildin_serial
+	rm *o ithildin_serial ithildin_mc_serial

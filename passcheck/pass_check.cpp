@@ -18,10 +18,7 @@
 #include <stdlib.h>
 
 const int MD5_HEX_LENGTH = 33;
-//char md5[MD5_HEX_LENGTH] = "0cc175b9c0f1b6a831c399e269772661"; // a
-//char md5[MD5_HEX_LENGTH] = "187ef4436122d1cc2f40dc2b92f0eba0"; // ab
-char md5[MD5_HEX_LENGTH];// = "4141638976566cb8526c738e7514df9f"; //ya1
-//char md5[MD5_HEX_LENGTH] = "286755fad04869ca523320acce0dc6a4"; //password
+char md5[MD5_HEX_LENGTH];
 
 /*
 *

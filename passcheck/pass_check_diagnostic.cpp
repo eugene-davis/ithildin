@@ -19,7 +19,7 @@
 #include <stdlib.h>
 
 
-const unsigned char real_pass[8] = {'p', 'a', 's', 's', 'w', 'o', 'r', 'd'}; // Cheated here, since final will ALWAYS have the same number of outputs
+const unsigned char real_pass[8] = {254, 'a', 's', 's', 'w', 'o', 'r', 'd'}; // Cheated here, since final will ALWAYS have the same number of outputs
 const int real_length = 4;
 
 /*

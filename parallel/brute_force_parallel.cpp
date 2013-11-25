@@ -31,6 +31,8 @@
 	Powered by Dwarves.
 */
 
+#define csv
+
 #include <iostream>
 #include "../passcheck/pass_check.h"
 #include <sys/time.h>
@@ -38,6 +40,10 @@
 #include <omp.h>
 #include <openssl/rand.h>
 #include <climits>
+#ifdef csv
+#include <fstream>
+const char time_file[] = "times_parallel.csv";
+#endif
 
 using namespace std;
 
@@ -124,8 +130,15 @@ int main(int argc, char *argv[])
 	}
 	TIMER_STOP;
 
+#ifndef csv	
 	cout << "time=" << setprecision(8) <<  TIMER_ELAPSED/1000000.0 
         << " seconds" << endl;
+#else
+	// Write out time to a file of other runs of this version
+	ofstream file(time_file, std::fstream::app);
+	file << setprecision(8) <<  TIMER_ELAPSED/1000000.0 << ",";
+	file.close();
+#endif
 	
 	return 0;
 }
@@ -165,7 +178,6 @@ int enumChars(int cur_pos, unsigned char pass[], const int max_length)
 // Should only be called if program was successful.
 void printPass(int length, unsigned char pass[])
 {
-	cout << "Mithril!" << endl;
     cout << "Password was ";
     for (int j = 0; j < length; j++)
     {   

@@ -29,12 +29,19 @@
 	Powered by Dwarves.
 */
 
+// Enable to write output to files
+#define csv
+
 #include <iostream>
 #include "../passcheck/pass_check.h"
 #include <sys/time.h>
 #include <iomanip>
 #include <openssl/rand.h>
 #include <climits>
+#ifdef csv
+#include <fstream>
+const char time_file[] = "times_mc_serial.csv";
+#endif
 
 using namespace std;
 
@@ -89,11 +96,17 @@ int main(int argc, char *argv[])
         }
     }
 	// Failure! Even the Orcs are running away now.
-	cout << "You shall not pass!" << endl;
-	
 	TIMER_STOP;
+#ifndef csv	
+	cout << "You shall not pass! Serial Run." << endl;
 	cout << "time=" << setprecision(8) <<  TIMER_ELAPSED/1000000.0 
         << " seconds" << endl;
+#else
+	// Write out time to a file of other runs of this version
+	ofstream file(time_file, std::fstream::app);
+	file << setprecision(8) <<  TIMER_ELAPSED/1000000.0 << ",";
+	file.close();
+#endif
 	
 	return 0;
 }
@@ -128,15 +141,20 @@ int enumChars(int cur_pos, unsigned char pass[], const int max_length)
 
 void printPass(int length, unsigned char pass[])
 {
-	cout << "Mithril!" << endl;
-    cout << "Password was ";
+	TIMER_STOP;
+	cout << "Password was ";
     for (int j = 0; j < length; j++)
     {   
     	cout << pass[j];
     }
     cout << endl;
-	TIMER_STOP;
-
+#ifndef csv
 	cout << "time=" << setprecision(8) <<  TIMER_ELAPSED/1000000.0 
         << " seconds" << endl;
+#else
+	// Write out time to a file of other runs of this version
+	ofstream file(time_file, std::fstream::app);
+	file << setprecision(8) <<  TIMER_ELAPSED/1000000.0 << ",";
+	file.close();
+#endif
 }

@@ -27,7 +27,7 @@ pass_check_diagnostic.o: ../passcheck/pass_check_diagnostic.cpp
 	g++ -c ../passcheck/pass_check_diagnostic.cpp -o pass_check_diagnostic.o
 
 monte_carlo_parallel.o: monte_carlo_parallel.cpp
-	g++ -c monte_carlo_parallel.cpp -o monte_carlo_parallel.o
+	g++ -c monte_carlo_parallel.cpp -o monte_carlo_parallel.o -fopenmp
 
 clean:
 	rm *o ithildin_parallel ithildin_mc_parallel

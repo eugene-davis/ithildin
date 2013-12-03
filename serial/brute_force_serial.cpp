@@ -32,7 +32,7 @@
 */
 
 // Enable to write output to files
-#define csv
+//#define csv
 
 #include <iostream>
 #include "../passcheck/pass_check.h"

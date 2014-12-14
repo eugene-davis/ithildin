@@ -1,6 +1,10 @@
 Eugene Davis - November 2013 - CPE 412
 Ithildin Password Cracker -- README
 
+Ithildin is a simplistic (and mediocre) password cracker made parallel with OpenMP. Though it doesn't hold up against most password crackers out there, it appears to be the only one themed around Lord of the Rings.
+
+For those unfamiliar with ithildin from Lord of the Rings, it is the substance used on the Doors of Durin to provide a hint to their password (http://tolkiengateway.net/wiki/Ithildin).
+
 Dependencies:
 	OpenSSL
 	OpenMP
